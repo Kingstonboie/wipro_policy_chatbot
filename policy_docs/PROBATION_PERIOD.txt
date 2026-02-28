@@ -1,0 +1,20 @@
+*** SAMPLE / FAKE DOCUMENT - NOT ACTUAL WIPRO POLICY ***
+
+1   WIPRO PROBATION POLICY (ver 2.0)
+2   
+3   1. DURATION
+4   -----------
+5   Probation period is 6 months for most positions.
+6   Can be extended by up to 3 months with HR approval.
+7   
+8   2. EVALUATION
+9   -------------
+10  Performance reviews at 3 months and end of probation.
+11  Feedback from manager and peers.
+12  
+13  3. CONFIRMATION
+14  ---------------
+15  Upon successful completion, employee receives confirmation letter.
+16  Benefits become fully effective from confirmation date.
+17  
+18  *Note: This is a sample document and does not reflect actual Wipro policies.

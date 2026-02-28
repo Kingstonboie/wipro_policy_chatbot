@@ -1,0 +1,23 @@
+*** SAMPLE / FAKE DOCUMENT - NOT ACTUAL WIPRO POLICY ***
+
+1   WIPRO CODE OF CONDUCT (ver 5.0)
+2   
+3   1. INTEGRITY AND ETHICS
+4   ------------------------
+5   All employees must act with honesty and integrity.
+6   Avoid conflicts of interest; disclose any potential conflict to HR.
+7   
+8   2. CONFIDENTIALITY
+9   ------------------
+10  Do not disclose confidential client or company information without authorization.
+11  
+12  3. ANTI-HARASSMENT
+13  ------------------
+14  Wipro maintains a zero-tolerance policy toward harassment and discrimination.
+15  Report incidents to the Ethics Helpline.
+16  
+17  4. COMPLIANCE WITH LAWS
+18  -----------------------
+19  Employees must comply with all applicable laws and regulations.
+20  
+21  *Note: This is a sample document and does not reflect actual Wipro policies.

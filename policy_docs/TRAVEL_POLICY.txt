@@ -1,0 +1,24 @@
+*** SAMPLE / FAKE DOCUMENT - NOT ACTUAL WIPRO POLICY ***
+
+1   WIPRO TRAVEL POLICY (ver 2.3)
+2   
+3   1. BOOKING PROCEDURE
+4   --------------------
+5   All business travel must be booked through the corporate travel portal.
+6   Economy class for flights under 5 hours; business class for longer flights with VP approval.
+7   
+8   2. ACCOMMODATION
+9   ----------------
+10  Hotel stays: up to ₹5,000 per night in metro cities, ₹3,500 in other cities.
+11  
+12  3. PER DIEM ALLOWANCE
+13  ---------------------
+14  Domestic travel: ₹800 per day for meals and incidentals.
+15  International travel: varies by country (see appendix).
+16  
+17  4. TRAVEL ADVANCE
+18  -----------------
+19  Employees can request a travel advance up to 80% of estimated costs.
+20  Settle within 7 days of return.
+21  
+22  *Note: This is a sample document and does not reflect actual Wipro policies.

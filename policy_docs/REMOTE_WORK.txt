@@ -1,0 +1,25 @@
+*** SAMPLE / FAKE DOCUMENT - NOT ACTUAL WIPRO POLICY ***
+
+1   WIPRO REMOTE WORK POLICY (ver 1.5)
+2   
+3   1. ELIGIBILITY
+4   --------------
+5   Remote work is permitted for roles that do not require physical presence.
+6   Approval from manager and HR is required.
+7   
+8   2. WORK HOURS
+9   -------------
+10  Employees must be available during core hours (10:00 AM – 4:00 PM IST).
+11  Flexible start times allowed with manager agreement.
+12  
+13  3. INFRASTRUCTURE
+14  -----------------
+15  Company laptop and VPN access provided.
+16  Employees are responsible for a secure internet connection.
+17  
+18  4. REPORTING
+19  ------------
+20  Daily status updates via project management tool.
+21  Attend all scheduled virtual meetings.
+22  
+23  *Note: This is a sample document and does not reflect actual Wipro policies.

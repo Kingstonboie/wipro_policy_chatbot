@@ -1,0 +1,27 @@
+*** SAMPLE / FAKE DOCUMENT - NOT ACTUAL WIPRO POLICY ***
+
+1   WIPRO EXPENSE CLAIMS POLICY (ver 2.1)
+2   
+3   1. ELIGIBLE EXPENSES
+4   --------------------
+5   The following expenses can be claimed:
+6     - Travel (taxi, train, flight) with original receipts.
+7     - Meals up to ₹500 per day when on business travel.
+8     - Client entertainment with prior manager approval.
+9   
+10  2. SUBMISSION PROCESS
+11  ---------------------
+12  Claims must be submitted within 30 days of incurring the expense.
+13  Use the Concur system to upload receipts and fill the claim form.
+14  
+15  3. APPROVAL LIMITS
+16  ------------------
+17  Expenses below ₹5,000 need manager approval only.
+18  Expenses above ₹5,000 require additional finance team approval.
+19  
+20  4. REIMBURSEMENT TIMELINE
+21  -------------------------
+22  Approved claims are processed within 7 working days.
+23  Payment is made via direct bank transfer.
+24  
+25  *Note: This is a sample document and does not reflect actual Wipro policies.

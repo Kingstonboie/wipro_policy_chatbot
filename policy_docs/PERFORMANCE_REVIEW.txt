@@ -1,0 +1,23 @@
+*** SAMPLE / FAKE DOCUMENT - NOT ACTUAL WIPRO POLICY ***
+
+1   WIPRO PERFORMANCE REVIEW POLICY (ver 3.1)
+2   
+3   1. REVIEW CYCLE
+4   ----------------
+5   Performance reviews are conducted twice a year (April and October).
+6   
+7   2. PROCESS
+8   ----------
+9   Employees set goals at the beginning of each cycle.
+10  Mid-year feedback and year-end appraisal.
+11  
+12  3. RATINGS
+13  ----------
+14  Ratings: Outstanding, Exceeds Expectations, Meets Expectations, Needs Improvement.
+15  Ratings impact bonuses and promotions.
+16  
+17  4. APPEALS
+18  ----------
+19  Employees can appeal ratings within 7 days of communication.
+20  
+21  *Note: This is a sample document and does not reflect actual Wipro policies.
