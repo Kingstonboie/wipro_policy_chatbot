@@ -1,7 +1,10 @@
 # rag_pipeline.py
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-from langchain_ollama import OllamaLLM
+# Only import OllamaLLM if we're using it locally
+import os
+if os.getenv('STREAMLIT_RUNTIME_ENV') != 'production' and os.getenv('CLOUD_DEPLOYMENT') != 'true':
+    from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
