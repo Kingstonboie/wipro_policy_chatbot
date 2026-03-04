@@ -104,15 +104,17 @@ PROMPT = PromptTemplate(
 print("5. Initializing LLM...")
 
 def call_huggingface_api(prompt):
-    """Call HuggingFace's inference API using the official client"""
+    """Call HuggingFace's inference API using the official client with better error handling"""
     from huggingface_hub import InferenceClient
     
     HF_MODEL = os.getenv('HF_MODEL', 'microsoft/phi-2')
     token = os.getenv('HUGGINGFACE_TOKEN')
     
+    print(f"🔍 Debug - Using model: {HF_MODEL}")
+    print(f"🔍 Debug - Token present: {'Yes' if token else 'No'}")
+    print(f"🔍 Debug - Prompt length: {len(prompt)} characters")
+    
     try:
-        print(f"🔄 Calling HuggingFace API with model: {HF_MODEL}")
-        
         # Initialize the client
         client = InferenceClient(model=HF_MODEL, token=token)
         
@@ -126,11 +128,24 @@ def call_huggingface_api(prompt):
             return_full_text=False
         )
         
+        print(f"✅ Success! Response length: {len(response)} characters")
         return response
         
     except Exception as e:
-        print(f"❌ Error calling HuggingFace API: {e}")
-        return f"Error: {str(e)}"
+        error_msg = str(e)
+        print(f"❌ Error calling HuggingFace API: {error_msg}")
+        
+        # Provide more helpful error messages
+        if "401" in error_msg:
+            return "Error: Invalid or missing HuggingFace token. Please check your token."
+        elif "403" in error_msg:
+            return "Error: You don't have permission to access this model. The model may require gated access."
+        elif "429" in error_msg:
+            return "Error: Rate limit exceeded. Please try again later or add a HuggingFace token for higher limits."
+        elif "503" in error_msg:
+            return "Error: Model is currently loading. Please try again in a few seconds."
+        else:
+            return f"Error: {error_msg}"
 
 # Choose LLM based on config
 if LLM_MODEL == "HuggingFace":
@@ -212,3 +227,11 @@ for i, doc in enumerate(test_results):
     print(f"  Result {i+1}: {doc.metadata['source']} (lines {doc.metadata['start_line']}-{doc.metadata['end_line']})")
     print(f"  Preview: {doc.page_content[:100].replace(chr(10), ' ')}...")
 print("="*50)
+
+# ---------------------------
+# 8. Test HuggingFace API (only on cloud)
+# ---------------------------
+if LLM_MODEL == "HuggingFace":
+    print("\n🔍 Testing HuggingFace API connection...")
+    test_response = call_huggingface_api("Say 'Hello, I am working!' in one word.")
+    print(f"🔍 Test response: {test_response}")
