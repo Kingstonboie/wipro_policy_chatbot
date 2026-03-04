@@ -1,16 +1,15 @@
 # rag_pipeline.py
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
 import os
 import shutil
+import requests
+import json
 
-from config import EMBEDDING_MODEL, LLM_MODEL, PERSIST_DIR, RETRIEVAL_K
+from config import EMBEDDING_MODEL, LLM_MODEL, PERSIST_DIR, RETRIEVAL_K, HF_MODEL
 from document_loader import load_documents_with_lines
 
 print("="*50)
@@ -72,15 +71,12 @@ def format_docs(docs):
     return "\n\n".join(formatted)
 
 # ---------------------------
-# 4. Define prompt template with chat history
+# 4. Define prompt template
 # ---------------------------
 prompt_template = """
-You are an AI assistant for Wipro policies. Use the following context and chat history to answer the question.
+You are an AI assistant for Wipro policies. Use the following context to answer the question.
 If you cannot find the answer in the context, say "I don't have information on that."
 Always cite the source document and line numbers in your answer using the format: from "DocumentName" Line X-Y, Line A-B.
-
-Chat History:
-{chat_history}
 
 Context:
 {context}
@@ -91,19 +87,64 @@ Answer (with citations):"""
 
 PROMPT = PromptTemplate(
     template=prompt_template, 
-    input_variables=["chat_history", "context", "question"]
+    input_variables=["context", "question"]
 )
 
 # ---------------------------
-# 5. Initialize LLM
+# 5. LLM Initialization - Choose based on environment
 # ---------------------------
-print("5. Initializing LLM...")
-llm = OllamaLLM(model=LLM_MODEL)
+print(f"5. Initializing LLM with model: {LLM_MODEL}")
+
+def call_huggingface_api(prompt):
+    """Call HuggingFace's free inference API"""
+    API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+    headers = {"Authorization": f"Bearer {os.getenv('HUGGINGFACE_TOKEN', '')}"}
+    
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "max_new_tokens": 500,
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "do_sample": True
+        }
+    }
+    
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload)
+        result = response.json()
+        
+        # Handle different response formats
+        if isinstance(result, list) and len(result) > 0:
+            return result[0].get('generated_text', '')
+        elif isinstance(result, dict) and 'generated_text' in result:
+            return result['generated_text']
+        else:
+            return str(result)
+    except Exception as e:
+        print(f"Error calling HuggingFace API: {e}")
+        return f"Error: {str(e)}"
+
+def call_ollama(prompt):
+    """Call local Ollama instance"""
+    from langchain_ollama import OllamaLLM
+    llm = OllamaLLM(model=LLM_MODEL)
+    return llm.invoke(prompt)
+
+# Choose the appropriate LLM function based on environment
+if LLM_MODEL == "HuggingFace":
+    print(f"   Using HuggingFace model: {HF_MODEL}")
+    llm_func = call_huggingface_api
+else:
+    print("   Using local Ollama")
+    from langchain_ollama import OllamaLLM
+    llm = OllamaLLM(model=LLM_MODEL)
+    llm_func = llm.invoke
 
 # ---------------------------
-# 6. Create a function that includes history in the context
+# 6. Set up message history for conversation memory
 # ---------------------------
-print("6. Building RAG chain with memory...")
+print("6. Setting up conversation memory...")
 
 # Store for session histories
 session_store = {}
@@ -123,36 +164,54 @@ def format_chat_history(messages):
             formatted.append(f"Assistant: {msg.content}")
     return "\n".join(formatted)
 
-# Custom chain that includes history
-# Custom chain that includes history
+# ---------------------------
+# 7. Custom chain that includes history
+# ---------------------------
 def rag_with_history(question, session_id):
     # Get chat history
     chat_history = get_session_history(session_id)
     history_str = format_chat_history(chat_history.messages)
     
-    # Retrieve relevant docs - FIXED THIS LINE
-    docs = retriever.invoke(question)  # Changed from get_relevant_documents
-    
+    # Retrieve relevant docs
+    docs = retriever.invoke(question)
     context = format_docs(docs)
     
-    # Generate response
-    response = llm.invoke(PROMPT.format(
-        chat_history=history_str,
-        context=context,
-        question=question
-    ))
+    # Build the full prompt with history
+    full_prompt = f"""You are an AI assistant for Wipro policies. Use the following context and chat history to answer the question.
+If you cannot find the answer in the context, say "I don't have information on that."
+Always cite the source document and line numbers in your answer using the format: from "DocumentName" Line X-Y, Line A-B.
+
+Chat History:
+{history_str}
+
+Context:
+{context}
+
+Question: {question}
+
+Answer (with citations):"""
+    
+    # Generate response using the appropriate LLM function
+    if LLM_MODEL == "HuggingFace":
+        response = call_huggingface_api(full_prompt)
+        # Clean up response if needed (HuggingFace sometimes returns the prompt + answer)
+        if full_prompt in response:
+            response = response.replace(full_prompt, "").strip()
+    else:
+        response = llm.invoke(full_prompt)
     
     # Add to history
     chat_history.add_user_message(question)
     chat_history.add_ai_message(response)
     
     return response
+
 print("="*50)
 print("RAG pipeline with memory ready!")
 print("="*50)
 
 # ---------------------------
-# 7. Quick test
+# 8. Quick test
 # ---------------------------
 print("\nTesting retrieval for 'sick leave':")
 test_results = vectorstore.similarity_search("sick leave", k=2)

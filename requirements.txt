@@ -1,8 +1,10 @@
 streamlit
-langchain-core
+langchain
 langchain-community
-langchain-ollama
+langchain-core
 langchain-huggingface
 langchain-chroma
 chromadb
 sentence-transformers
+huggingface-hub
+requests
