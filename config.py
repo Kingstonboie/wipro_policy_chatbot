@@ -3,16 +3,20 @@ import os
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DOCS_DIR = os.path.join(BASE_DIR, "policy_docs")
-PERSIST_DIR = os.path.join(BASE_DIR, "chroma_db")
+GAGAN_DOCS_DIR = os.path.join(BASE_DIR, "gagan_bot", "policy_docs")
+GAGAN_PERSIST_DIR = os.path.join(BASE_DIR, "chroma_db")
 
-# Embedding model
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"  # any sentence-transformers model
+HARDIK_DOCS_DIR = os.path.join(BASE_DIR, "hardik_bot")
+HARDIK_CSV_PATH = os.path.join(HARDIK_DOCS_DIR, "deepseek_csv_20260302_c82ca1.csv")
+HARDIK_PERSIST_DIR = os.path.join(HARDIK_DOCS_DIR, "chrome_langchain_db")
 
-# LLM (Ollama)
-LLM_MODEL = "qwen2.5-coder:7b"        # ensure it's pulled via ollama
+# Shared LLM (both bots use the same model)
+LLM_MODEL = "qwen2.5-coder:7b"
+EMBEDDING_MODEL = "mxbai-embed-large"  # For Hardik's bot
 
 # Retrieval settings
-RETRIEVAL_K = 4                        # number of chunks to retrieve
-CHUNK_SIZE = 10                         # lines per chunk
-CHUNK_OVERLAP = 2                        # overlap lines between chunks
+RETRIEVAL_K = 4
+
+# ADD THESE LINES - Chunking settings for Gagan's bot
+CHUNK_SIZE = 10
+CHUNK_OVERLAP = 2

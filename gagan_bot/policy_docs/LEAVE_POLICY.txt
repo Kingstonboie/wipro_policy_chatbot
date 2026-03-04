@@ -23,4 +23,3 @@
 21  ------------------
 22  The list of public holidays is published at the beginning of each year.
 23  
-24  *Note: This is a sample document and does not reflect actual Wipro policies.

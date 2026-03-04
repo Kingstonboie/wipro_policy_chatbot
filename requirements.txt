@@ -1,8 +1,16 @@
+# Shared
 streamlit
+langchain
 langchain-core
 langchain-community
-langchain-ollama
-langchain-huggingface
 langchain-chroma
 chromadb
 sentence-transformers
+pandas
+
+# Gagan's Bot
+langchain-huggingface
+langchain-ollama
+
+# Hardik's Bot
+langchain-ollama  # Already included above

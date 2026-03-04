@@ -17,4 +17,3 @@
 15  Upon successful completion, employee receives confirmation letter.
 16  Benefits become fully effective from confirmation date.
 17  
-18  *Note: This is a sample document and does not reflect actual Wipro policies.

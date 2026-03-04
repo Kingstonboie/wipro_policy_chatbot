@@ -21,4 +21,3 @@
 19  Employees can request a travel advance up to 80% of estimated costs.
 20  Settle within 7 days of return.
 21  
-22  *Note: This is a sample document and does not reflect actual Wipro policies.

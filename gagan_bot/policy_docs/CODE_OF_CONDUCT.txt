@@ -20,4 +20,4 @@
 18  -----------------------
 19  Employees must comply with all applicable laws and regulations.
 20  
-21  *Note: This is a sample document and does not reflect actual Wipro policies.
+21
