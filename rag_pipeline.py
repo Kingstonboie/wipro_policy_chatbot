@@ -1,10 +1,6 @@
 # rag_pipeline.py
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-# Only import OllamaLLM if we're using it locally
-import os
-if os.getenv('STREAMLIT_RUNTIME_ENV') != 'production' and os.getenv('CLOUD_DEPLOYMENT') != 'true':
-    from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -12,6 +8,8 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 import os
 import shutil
+import requests
+import json
 
 from config import EMBEDDING_MODEL, LLM_MODEL, PERSIST_DIR, RETRIEVAL_K
 from document_loader import load_documents_with_lines
@@ -140,6 +138,7 @@ if LLM_MODEL == "HuggingFace":
     llm = None  # Not using OllamaLLM
 else:
     print(f"   Using local Ollama with model: {LLM_MODEL}")
+    # Import OllamaLLM only when needed (not on Streamlit Cloud)
     from langchain_ollama import OllamaLLM
     llm = OllamaLLM(model=LLM_MODEL)
 
@@ -166,8 +165,6 @@ def format_chat_history(messages):
             formatted.append(f"Assistant: {msg.content}")
     return "\n".join(formatted)
 
-# Custom chain that includes history
-# Custom chain that includes history
 # Custom chain that includes history
 def rag_with_history(question, session_id):
     # Get chat history
@@ -199,6 +196,7 @@ def rag_with_history(question, session_id):
     chat_history.add_ai_message(response)
     
     return response
+
 print("="*50)
 print("RAG pipeline with memory ready!")
 print("="*50)
