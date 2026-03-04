@@ -35,3 +35,7 @@ CHUNK_SIZE = 10
 CHUNK_OVERLAP = 2
 
 print(f"📋 Config: LLM_MODEL={LLM_MODEL}, RETRIEVAL_K={RETRIEVAL_K}")
+
+# Export HF_MODEL for use in other files
+if IS_STREAMLIT_CLOUD:
+    HF_MODEL = os.getenv('HF_MODEL', 'microsoft/phi-2')

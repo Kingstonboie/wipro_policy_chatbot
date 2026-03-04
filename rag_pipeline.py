@@ -98,37 +98,38 @@ PROMPT = PromptTemplate(
 # ---------------------------
 # 5. Initialize LLM - Choose based on environment
 # ---------------------------
+# ---------------------------
+# 5. Initialize LLM - Choose based on environment
+# ---------------------------
 print("5. Initializing LLM...")
 
 def call_huggingface_api(prompt):
-    """Call HuggingFace's free inference API"""
-    HF_MODEL = os.getenv('HF_MODEL', 'microsoft/phi-2')
-    API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
-    headers = {"Authorization": f"Bearer {os.getenv('HUGGINGFACE_TOKEN', '')}"}
+    """Call HuggingFace's inference API using the official client"""
+    from huggingface_hub import InferenceClient
     
-    payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_new_tokens": 500,
-            "temperature": 0.7,
-            "top_p": 0.95,
-            "do_sample": True
-        }
-    }
+    HF_MODEL = os.getenv('HF_MODEL', 'microsoft/phi-2')
+    token = os.getenv('HUGGINGFACE_TOKEN')
     
     try:
-        response = requests.post(API_URL, headers=headers, json=payload)
-        result = response.json()
+        print(f"🔄 Calling HuggingFace API with model: {HF_MODEL}")
         
-        # Handle different response formats
-        if isinstance(result, list) and len(result) > 0:
-            return result[0].get('generated_text', '')
-        elif isinstance(result, dict) and 'generated_text' in result:
-            return result['generated_text']
-        else:
-            return str(result)
+        # Initialize the client
+        client = InferenceClient(model=HF_MODEL, token=token)
+        
+        # For text generation models
+        response = client.text_generation(
+            prompt,
+            max_new_tokens=500,
+            temperature=0.7,
+            top_p=0.95,
+            do_sample=True,
+            return_full_text=False
+        )
+        
+        return response
+        
     except Exception as e:
-        print(f"Error calling HuggingFace API: {e}")
+        print(f"❌ Error calling HuggingFace API: {e}")
         return f"Error: {str(e)}"
 
 # Choose LLM based on config
