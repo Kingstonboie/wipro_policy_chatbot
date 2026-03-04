@@ -1,5 +1,5 @@
 # hardik_bot/vector.py
-from langchain_ollama import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings  # <-- Make sure this is at the top
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 import os
@@ -8,7 +8,7 @@ import sys
 
 # Import config from parent directory
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import HARDIK_CSV_PATH, HARDIK_PERSIST_DIR, EMBEDDING_MODEL, RETRIEVAL_K
+from config import HARDIK_CSV_PATH, HARDIK_EMBEDDING_MODEL, HARDIK_PERSIST_DIR, RETRIEVAL_K
 
 # Global variable to cache retriever
 _retriever = None
@@ -28,7 +28,7 @@ def get_retriever():
     if not os.path.exists(HARDIK_CSV_PATH):
         print(f"ERROR: CSV file not found at {HARDIK_CSV_PATH}")
         # Return empty retriever
-        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+        embeddings = OllamaEmbeddings(model=HARDIK_EMBEDDING_MODEL)
         vector_store = Chroma(
             embedding_function=embeddings,
             persist_directory=HARDIK_PERSIST_DIR
@@ -42,8 +42,8 @@ def get_retriever():
     print(f"Loaded {len(df)} rows")
     
     # Initialize embeddings
-    print("Initializing embeddings...")
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+    print(f"Initializing embeddings with model: {HARDIK_EMBEDDING_MODEL}")
+    embeddings = OllamaEmbeddings(model=HARDIK_EMBEDDING_MODEL)
     
     # Check if we need to add documents
     add_documents = not os.path.exists(HARDIK_PERSIST_DIR)

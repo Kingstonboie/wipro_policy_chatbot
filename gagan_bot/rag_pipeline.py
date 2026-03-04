@@ -1,4 +1,4 @@
-# gagan_bot/rag_pipeline.py
+# rag_pipeline.py
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaLLM
@@ -7,22 +7,24 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 import os
 import shutil
 
-# Import config from parent directory
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import GAGAN_DOCS_DIR, GAGAN_PERSIST_DIR, RETRIEVAL_K, LLM_MODEL
+from config import GAGAN_EMBEDDING_MODEL, LLM_MODEL, GAGAN_PERSIST_DIR, RETRIEVAL_K, USE_AWS, BEDROCK_MODEL_ID
+
+# Import Bedrock only if using AWS
+if USE_AWS:
+    from bedrock_llm import BedrockLLM
 
 from gagan_bot.document_loader import load_documents_with_lines
 
 print("="*50)
-print("Starting Gagan's Bot RAG Pipeline")
+print("Starting RAG Pipeline Setup")
 print("="*50)
 
 # ---------------------------
 # 1. Initialize embedding model
 # ---------------------------
 print("1. Initializing embedding model...")
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+from config import GAGAN_EMBEDDING_MODEL
+embeddings = HuggingFaceEmbeddings(model_name=GAGAN_EMBEDDING_MODEL)
 
 # ---------------------------
 # 2. Load documents and create vector store
@@ -33,33 +35,24 @@ print(f"   Loaded {len(documents)} document chunks")
 
 if len(documents) == 0:
     print("   ERROR: No documents loaded! Check policy_docs folder.")
-    # Don't exit, just continue with empty store
+    exit()
 
 # Show unique sources
-if documents:
-    sources = set([doc.metadata['source'] for doc in documents])
-    print(f"   Documents found: {sources}")
+sources = set([doc.metadata['source'] for doc in documents])
+print(f"   Documents found: {sources}")
 
 print("3. Creating vector store...")
 # Delete existing store if it exists to force rebuild
-if os.path.exists(GAGAN_PERSIST_DIR):
+if os.path.exists(GAGAN_PERSIST_DIR):  # Changed from PERSIST_DIR
     print("   Removing existing vector store...")
-    shutil.rmtree(GAGAN_PERSIST_DIR)
+    shutil.rmtree(GAGAN_PERSIST_DIR)  # Changed from PERSIST_DIR
 
-if documents:
-    vectorstore = Chroma.from_documents(
-        documents=documents,
-        embedding=embeddings,
-        persist_directory=GAGAN_PERSIST_DIR
-    )
-    print("   Vector store created successfully!")
-else:
-    # Create empty vector store
-    vectorstore = Chroma(
-        embedding_function=embeddings,
-        persist_directory=GAGAN_PERSIST_DIR
-    )
-    print("   Empty vector store created!")
+vectorstore = Chroma.from_documents(
+    documents=documents,
+    embedding=embeddings,
+    persist_directory=GAGAN_PERSIST_DIR  # Changed from PERSIST_DIR
+)
+print("   Vector store created successfully!")
 
 retriever = vectorstore.as_retriever(search_kwargs={"k": RETRIEVAL_K})
 print(f"4. Retriever created with k={RETRIEVAL_K}")
@@ -73,9 +66,9 @@ def format_docs(docs):
     
     formatted = []
     for doc in docs:
-        source = doc.metadata.get("source", "Unknown")
-        start = doc.metadata.get("start_line", 0)
-        end = doc.metadata.get("end_line", 0)
+        source = doc.metadata["source"]
+        start = doc.metadata["start_line"]
+        end = doc.metadata["end_line"]
         formatted.append(
             f"[From {source} lines {start}-{end}]:\n{doc.page_content}"
         )
@@ -105,10 +98,16 @@ PROMPT = PromptTemplate(
 )
 
 # ---------------------------
-# 5. Initialize LLM (using shared model)
+# 5. Initialize LLM - Choose based on config
 # ---------------------------
 print("5. Initializing LLM...")
-llm = OllamaLLM(model=LLM_MODEL)
+
+if USE_AWS:
+    print(f"   Using AWS Bedrock with model: {BEDROCK_MODEL_ID}")
+    llm = BedrockLLM()
+else:
+    print(f"   Using local Ollama with model: {LLM_MODEL}")
+    llm = OllamaLLM(model=LLM_MODEL)
 
 # ---------------------------
 # 6. Create a function that includes history in the context
@@ -142,7 +141,7 @@ def rag_with_history(question, session_id):
     docs = retriever.invoke(question)
     context = format_docs(docs)
     
-    # Generate response
+    # Generate response (works same for both Ollama and Bedrock)
     response = llm.invoke(PROMPT.format(
         chat_history=history_str,
         context=context,
@@ -156,5 +155,16 @@ def rag_with_history(question, session_id):
     return response
 
 print("="*50)
-print("Gagan's Bot RAG pipeline ready!")
+print("RAG pipeline with memory ready!")
+print("="*50)
+
+# ---------------------------
+# 7. Quick test
+# ---------------------------
+print("\nTesting retrieval for 'sick leave':")
+test_results = vectorstore.similarity_search("sick leave", k=2)
+print(f"Found {len(test_results)} results")
+for i, doc in enumerate(test_results):
+    print(f"  Result {i+1}: {doc.metadata['source']} (lines {doc.metadata['start_line']}-{doc.metadata['end_line']})")
+    print(f"  Preview: {doc.page_content[:100].replace(chr(10), ' ')}...")
 print("="*50)
