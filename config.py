@@ -17,17 +17,15 @@ RETRIEVAL_K = 4                        # number of chunks to retrieve
 CHUNK_SIZE = 10                         # lines per chunk
 CHUNK_OVERLAP = 2                        # overlap lines between chunks
 
-# In config.py, add this conditional:
+# config.py
 import os
 
-# If running on Streamlit Cloud, use an alternative LLM
+# If running on Streamlit Cloud
 if os.getenv('STREAMLIT_RUNTIME_ENV') == 'production':
-    # Option A: Use OpenAI (requires API key)
-    LLM_MODEL = "gpt-3.5-turbo"  
-    # You'd need to add OpenAI integration
-    
-    # Option B: Use HuggingFace Inference API (free tier available)
-    # This would require additional setup
+    # Use HuggingFace's free inference API
+    LLM_MODEL = "HuggingFace"  
+    HF_MODEL = "microsoft/phi-2"  # Small, efficient model
+    # You'll need to update rag_pipeline.py to use HuggingFace
 else:
     # Local development with Ollama
     LLM_MODEL = "qwen2.5-coder:7b"
