@@ -16,3 +16,18 @@ LLM_MODEL = "qwen2.5-coder:7b"        # ensure it's pulled via ollama
 RETRIEVAL_K = 4                        # number of chunks to retrieve
 CHUNK_SIZE = 10                         # lines per chunk
 CHUNK_OVERLAP = 2                        # overlap lines between chunks
+
+# In config.py, add this conditional:
+import os
+
+# If running on Streamlit Cloud, use an alternative LLM
+if os.getenv('STREAMLIT_RUNTIME_ENV') == 'production':
+    # Option A: Use OpenAI (requires API key)
+    LLM_MODEL = "gpt-3.5-turbo"  
+    # You'd need to add OpenAI integration
+    
+    # Option B: Use HuggingFace Inference API (free tier available)
+    # This would require additional setup
+else:
+    # Local development with Ollama
+    LLM_MODEL = "qwen2.5-coder:7b"
